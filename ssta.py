@@ -12,12 +12,10 @@ def parse_bench_file(file_path):
     # Open and read the .bench file
     with open(file_path, 'r') as file:
         for line in file:
-            # Strip whitespace and ignore comments
             line = line.strip()
             if not line or line.startswith('#'):
                 continue
 
-            # Process input and output declarations
             if line.startswith('INPUT'):
                 input_node = line.split('(')[1].strip(')')
                 graph.add_node(input_node, type='input')
@@ -25,13 +23,11 @@ def parse_bench_file(file_path):
                 output_node = line.split('(')[1].strip(')')
                 graph.add_node(output_node, type='output')
             else:
-                # Process gate declarations
                 output, expression = line.split('=')
                 output = output.strip()
                 gate_type = expression.split('(')[0].strip()
                 inputs = expression.split('(')[1].strip(')').split(',')
 
-                # Add nodes and edges with gate information
                 for input_node in inputs:
                     input_node = input_node.strip()
                     graph.add_edge(input_node, output, gate=gate_type)
@@ -48,14 +44,11 @@ def print_graph_info(graph):
         print(edge)
 
 def find_all_io_paths(graph):
-    # Identify input and output nodes based on their 'type' attribute
     input_nodes = [n for n, attr in graph.nodes(data=True) if attr.get('type') == 'input']
     output_nodes = [n for n, attr in graph.nodes(data=True) if attr.get('type') == 'output']
 
-    # List to store all paths
     all_paths = []
 
-    # Find all paths from each input node to each output node
     for input_node in input_nodes:
         for output_node in output_nodes:
             paths = list(nx.all_simple_paths(graph, source=input_node, target=output_node))
@@ -65,9 +58,7 @@ def find_all_io_paths(graph):
 
 
 def get_gate_info(graph, node1, node2):
-    # Check if the edge exists
     if graph.has_edge(node1, node2):
-        # Return the gate information
         return graph[node1][node2]['gate']
     else:
         return "No such edge exists"
@@ -85,16 +76,12 @@ def parse_time_file(file_path):
 
     with open(file_path, 'r') as file:
         for line in file:
-            # Ignore comments and empty lines
             if line.startswith('#') or not line.strip():
                 continue
-
-            # Split the line into parts
             parts = line.split()
             if len(parts) != 6:
                 continue  # Skip any malformed lines
 
-            # Extract the edge identifiers and timing values
             start_wire = parts[0]
             stop_wire = parts[1]
             timings = list(map(float, parts[2:]))  # Convert timing values to floats
